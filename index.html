@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVAMI tik - Premium Ticket Sales</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-ticket-alt"></i>
+                <span>OVAMI tik</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#add-event">Add Event</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#report" class="report-btn">Report Scam</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="particles-container" id="particles"></div>
+        <div class="hero-content">
+            <h1>Get Your Tickets to Amazing Events</h1>
+            <p>Discover and book tickets for the best concerts, shows, and events in your area</p>
+            <button class="cta-button" onclick="scrollToEvents()">Browse Events</button>
+        </div>
+        <div class="hero-image">
+            <div class="floating-card">
+                <i class="fas fa-music"></i>
+                <h3>Live Music</h3>
+                <p>Experience the magic</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="events" class="events">
+        <div class="container">
+            <h2>Featured Events</h2>
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search events, locations, or categories..." onkeyup="searchEvents(this.value)">
+                    <div class="search-filters">
+                        <select id="categoryFilter" onchange="filterEvents()">
+                            <option value="">All Categories</option>
+                            <option value="concert">Concert</option>
+                            <option value="theater">Theater</option>
+                            <option value="sports">Sports</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="festival">Festival</option>
+                            <option value="conference">Conference</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <select id="priceFilter" onchange="filterEvents()">
+                            <option value="">All Prices</option>
+                            <option value="0-25">$0 - $25</option>
+                            <option value="25-50">$25 - $50</option>
+                            <option value="50-100">$50 - $100</option>
+                            <option value="100+">$100+</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="events-grid" id="eventsGrid">
+                <!-- Events will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Ticket Purchase Modal -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Purchase Tickets</h2>
+            <div id="eventDetails"></div>
+            <div class="ticket-form">
+                <div class="form-group">
+                    <label for="ticketQuantity">Number of Tickets:</label>
+                    <select id="ticketQuantity">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="customerName">Full Name:</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerEmail">Email:</label>
+                    <input type="email" id="customerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="customerPhone">Phone:</label>
+                    <input type="tel" id="customerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="discountCode">Discount Code (Optional):</label>
+                    <div class="discount-input-group">
+                        <input type="text" id="discountCode" placeholder="Enter discount code">
+                        <button type="button" class="apply-discount-btn" onclick="applyDiscount()">Apply</button>
+                    </div>
+                    <div id="discountMessage" class="discount-message"></div>
+                </div>
+                <div class="total-price">
+                    <div class="price-breakdown">
+                        <p>Subtotal: $<span id="subtotalPrice">0</span></p>
+                        <p id="discountDisplay" style="display: none;">Discount: -$<span id="discountAmount">0</span></p>
+                        <h3>Total: $<span id="totalPrice">0</span></h3>
+                    </div>
+                </div>
+                <button class="purchase-btn" onclick="purchaseTickets()">Purchase Tickets</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scam Report Modal -->
+    <div id="scamModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Report Scam</h2>
+            <div class="scam-form">
+                <div class="form-group">
+                    <label for="scamEvent">Event Name:</label>
+                    <input type="text" id="scamEvent" required>
+                </div>
+                <div class="form-group">
+                    <label for="scamDescription">Description of Scam:</label>
+                    <textarea id="scamDescription" rows="4" required placeholder="Please describe what happened..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="scamDate">Date of Incident:</label>
+                    <input type="date" id="scamDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="scamContact">Your Contact (Optional):</label>
+                    <input type="text" id="scamContact" placeholder="Email or phone number">
+                </div>
+                <button class="report-btn" onclick="submitScamReport()">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Rate Your Experience</h2>
+            <div class="rating-form">
+                <div class="form-group">
+                    <label for="ratingEvent">Event Name:</label>
+                    <input type="text" id="ratingEvent" required>
+                </div>
+                <div class="form-group">
+                    <label>Rating:</label>
+                    <div class="star-rating">
+                        <i class="fas fa-star" data-rating="1"></i>
+                        <i class="fas fa-star" data-rating="2"></i>
+                        <i class="fas fa-star" data-rating="3"></i>
+                        <i class="fas fa-star" data-rating="4"></i>
+                        <i class="fas fa-star" data-rating="5"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ratingComment">Comment:</label>
+                    <textarea id="ratingComment" rows="4" placeholder="Share your experience..."></textarea>
+                </div>
+                <button class="rating-btn" onclick="submitRating()">Submit Rating</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="success-message">
+        <i class="fas fa-check-circle"></i>
+        <span id="successText"></span>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+        </div>
+        <p>Loading amazing events...</p>
+    </div>
+
+    <!-- Add Event Section -->
+    <section id="add-event" class="add-event">
+        <div class="container">
+            <h2>Add Your Event</h2>
+            <div class="add-event-form">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title:</label>
+                    <input type="text" id="eventTitle" required placeholder="Enter event title">
+                </div>
+                <div class="form-group">
+                    <label for="eventDate">Event Date:</label>
+                    <input type="datetime-local" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventLocation">Location:</label>
+                    <input type="text" id="eventLocation" required placeholder="Enter venue/location">
+                </div>
+                <div class="form-group">
+                    <label for="eventPrice">Price per Ticket ($):</label>
+                    <input type="number" id="eventPrice" step="0.01" min="0" required placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="eventCategory">Category:</label>
+                    <select id="eventCategory" required>
+                        <option value="">Select category</option>
+                        <option value="concert">Concert</option>
+                        <option value="theater">Theater</option>
+                        <option value="sports">Sports</option>
+                        <option value="comedy">Comedy</option>
+                        <option value="festival">Festival</option>
+                        <option value="conference">Conference</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Description:</label>
+                    <textarea id="eventDescription" rows="4" required placeholder="Describe your event..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="eventCapacity">Maximum Capacity:</label>
+                    <input type="number" id="eventCapacity" min="1" required placeholder="Number of available tickets">
+                </div>
+                <div class="form-group">
+                    <label for="eventContact">Contact Information:</label>
+                    <input type="text" id="eventContact" required placeholder="Your email or phone">
+                </div>
+                <div class="form-group">
+                    <label for="eventFlyer">Event Flyer (Optional):</label>
+                    <div class="flyer-upload-container">
+                        <input type="file" id="eventFlyer" accept="image/*" onchange="previewFlyer(event)">
+                        <div class="flyer-preview" id="flyerPreview" style="display: none;">
+                            <img id="flyerImage" src="" alt="Event Flyer Preview">
+                            <button type="button" class="remove-flyer-btn" onclick="removeFlyer()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <small class="form-help">Upload a flyer image (JPG, PNG, GIF). Max size: 5MB</small>
+                </div>
+                <button class="add-event-btn" onclick="addNewEvent()">Add Event</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About TicketHub</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>OVAMI tik is your trusted platform for purchasing tickets to the best events in town. We ensure secure transactions and provide a safe environment for both buyers and sellers.</p>
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Secure Transactions</h3>
+                            <p>Your payment information is protected with industry-standard encryption.</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-headset"></i>
+                            <h3>24/7 Support</h3>
+                            <p>Our customer support team is always here to help you.</p>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-flag"></i>
+                            <h3>Scam Protection</h3>
+                            <p>Report suspicious activities and help keep our community safe.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <p>aafoayo@gmail.com</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <p>08160792508</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>ABJ nigeria</p>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <div class="form-group">
+                        <input type="text" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="Your Message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>OVAMI tik</h3>
+                    <p>Your trusted platform for event tickets.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#events">Events</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#add-event">Add Event</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#report">Report Scam</a></li>
+                        <li><a href="#rating">Rate Events</a></li>
+                        <li><a href="#help">Help Center</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TicketHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Action Button -->
+    <div class="fab-container">
+        <button class="fab-button" onclick="scrollToSection('add-event')" title="Add New Event">
+            <i class="fas fa-plus"></i>
+        </button>
+        <div class="fab-tooltip">Add Event</div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
